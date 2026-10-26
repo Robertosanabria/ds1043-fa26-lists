@@ -7,16 +7,19 @@ from pathlib import Path
 
 
 def clamp(a: list[int], low: int = 0, high: int = 10) -> None:
-    """Modify the values of a to be `low` when they fall below `low` or `high` when the fall above `high`"""
-    return
+    """Modify the values of a to be low or high when outside the range."""
+    for i in range(len(a)):
+        if a[i] < low:
+            a[i] = low
+        elif a[i] > high:
+            a[i] = high
 
 
-# Try writing your own reverse function by actually moving values around rather than
-# using reversed, list.reverse, a[::-1], etc
 def reverse(a: list) -> None:
-    """Reverses the list a in place"""
-    return
-
+    """Reverses the list a in place."""
+    for i in range(len(a) // 2):
+        j = len(a) - 1 - i
+        a[i], a[j] = a[j], a[i]
 
 # Read the following function and write out your prediction of what it will do
 # in the following situations:
@@ -43,11 +46,13 @@ def list_files(folder: str) -> list[str]:
     filenames: list[str] = []
     items: list[Path] = []
     while len(items) > 0:
-        # item =  from `items` here
+        item = items.pop()
         if item.is_dir():  # if the item is a folder...
             # add the contents of item.iterdir() to items
+            items.extend(item.iterdir())
         else:
             # add item.name to filenames
+            filenames.append(item.name)
     return filenames
 
 
@@ -56,5 +61,26 @@ def list_files(folder: str) -> list[str]:
 # index of the unmatched parenthesis)
 def match_parentheses(line: str) -> list[str]:
     """Given a string containing an expression, return a list of subexpressions delineated by parenthesis"""
-    return [line]
+    stack = []
+    expressions = []
+
+    for i in range(len(line)):
+        if line[i] == "(":
+            stack.append(i)
+
+        elif line[i] == ")":
+            if len(stack) == 0:
+                raise ValueError(
+                    f"Unmatched closing parenthesis at index {i}"
+                )
+
+            start = stack.pop()
+            expressions.append(line[start + 1:i])
+
+    if len(stack) > 0:
+        raise ValueError(
+            f"Unmatched opening parenthesis at index {stack[-1]}"
+        )
+
+    return expressions
 
